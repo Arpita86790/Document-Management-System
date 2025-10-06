@@ -31,23 +31,7 @@ Filter results for faster access.
 
 Version Control
 
-Project Structure
-dms-project/
-│
-├── backend/
-│   ├── server.js          # Express server setup
-│   ├── db.js              # Mysql connection
-│   ├── routes/
-│   │   └── documentRoutes.js
-│   ├── uploads/           # Folder for storing uploaded files
-│
-└── frontend/
-    ├── src/
-    │   ├── app/
-    │   │   ├── components/
-    │   │   │   ├── UploadDocument.tsx
-    │   │   │   ├── DocumentList.tsx
-    │   │   │   └── SearchDocument.tsx
+
   
   
 Usage
