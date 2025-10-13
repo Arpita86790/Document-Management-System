@@ -1,11 +1,12 @@
 
 import axios from "axios";
+const API = process.env.REACT_APP_API_URL || "http://localhost:5000";
 import { useState } from "react";
 
 function DocumentUpload() {
   const [file, setFile] = useState(null);
+  const [title, setTitle] = useState("");
   const [tags, setTags] = useState("");
-  const [version, setVersion] = useState(1);
   const [message, setMessage] = useState("");
 
   const handleUpload = async () => {
@@ -16,19 +17,18 @@ function DocumentUpload() {
 
     const formData = new FormData();
     formData.append("file", file); 
+    formData.append("title", title);
     formData.append("tags", tags);
-    formData.append("version", version);
 
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/documents/upload",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      const token = localStorage.getItem("token");
+      const res = await axios.post(`${API}/api/documents/upload`, formData, {
+        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+      });
       setMessage("✅ " + res.data.message);
       setFile(null);
+      setTitle("");
       setTags("");
-      setVersion(1);
     } catch (err) {
       console.error(err);
       setMessage("❌ Upload failed!");
@@ -82,9 +82,9 @@ function DocumentUpload() {
 
         <input
           type="text"
-          placeholder="Enter tags (comma separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
+          placeholder="Title (defaults to filename)"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           style={{
             width: "100%",
             padding: "10px",
@@ -95,15 +95,14 @@ function DocumentUpload() {
         />
 
         <input
-          type="number"
-          placeholder="Version"
-          value={version}
-          onChange={(e) => setVersion(e.target.value)}
-          min="1"
+          type="text"
+          placeholder="Enter tags (comma separated)"
+          value={tags}
+          onChange={(e) => setTags(e.target.value)}
           style={{
             width: "100%",
             padding: "10px",
-            marginBottom: "20px",
+            marginBottom: "15px",
             borderRadius: "5px",
             border: "1px solid #ccc",
           }}
@@ -124,6 +123,10 @@ function DocumentUpload() {
         >
           Upload
         </button>
+
+        <div style={{ marginTop: 16, fontSize: 12, color: "#666" }}>
+          Only authenticated users can upload. Owner gets edit permission by default.
+        </div>
 
         {message && (
           <p
